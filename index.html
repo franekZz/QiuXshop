@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Symulator Portfela QX</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f3; display: flex; flex-direction: column; align-items: center; }
+        nav { background: #333; width: 100%; display: flex; justify-content: center; gap: 20px; padding: 15px 0; }
+        nav button { background: none; border: 1px solid white; color: white; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        nav button:hover { background: white; color: #333; }
+        
+        .tab { display: none; background: white; width: 80%; max-width: 500px; padding: 30px; margin-top: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .active { display: block; }
+
+        .balance-bar { background: #222; color: #00ffcc; padding: 10px 20px; border-radius: 50px; margin: 20px; font-weight: bold; }
+        .item { border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        input { padding: 8px; width: 100px; border-radius: 5px; border: 1px solid #ccc; margin: 10px; }
+        .buy-btn { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="balance-bar">
+        Portfel: <span id="pln-display">100</span> PLN | <span id="qx-display">0</span> QX
+    </div>
+
+    <nav>
+        <button onclick="showTab('bank')">🏦 Bank (Kantor)</button>
+        <button onclick="showTab('shop')">🛒 Sklep QX</button>
+    </nav>
+
+    <div id="bank" class="tab active">
+        <h2>Bank Centralny QX</h2>
+        <p>Kurs wymiany: <b>1 PLN = 5 QX</b></p>
+        <p>Ile PLN chcesz wymienić?</p>
+        <input type="number" id="exchange-amount" placeholder="Ilość PLN" min="1">
+        <br>
+        <button onclick="exchangeMoney()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            Wymień na QX
+        </button>
+        <p id="bank-msg" style="color: red;"></p>
+    </div>
+
+    <div id="shop" class="tab">
+        <h2>Sklep z wirtualnymi dobrami</h2>
+        <div class="item">
+            <span>Kawa Late (Fake)</span>
+            <span><b>15 QX</b> <button class="buy-btn" onclick="buy(15, 'Kawę')">Kup</button></span>
+        </div>
+        <div class="item">
+            <span>Złoty Miecz (Fake)</span>
+            <span><b>150 QX</b> <button class="buy-btn" onclick="buy(150, 'Miecz')">Kup</button></span>
+        </div>
+        <div class="item">
+            <span>Nowy Awatar (Fake)</span>
+            <span><b>50 QX</b> <button class="buy-btn" onclick="buy(50, 'Awatara')">Kup</button></span>
+        </div>
+        <p id="shop-msg" style="color: blue;"></p>
+    </div>
+
+    <script>
+        let pln = 100;
+        let qx = 0;
+        const rate = 5; // 1 PLN = 5 QX
+
+        function updateDisplay() {
+            document.getElementById('pln-display').innerText = pln;
+            document.getElementById('qx-display').innerText = qx;
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function exchangeMoney() {
+            let amount = parseInt(document.getElementById('exchange-amount').value);
+            if (amount > 0 && amount <= pln) {
+                pln -= amount;
+                qx += (amount * rate);
+                document.getElementById('bank-msg').innerText = "Wymiana udana!";
+                document.getElementById('bank-msg').style.color = "green";
+                updateDisplay();
+            } else {
+                document.getElementById('bank-msg').innerText = "Nie masz tyle PLN!";
+                document.getElementById('bank-msg').style.color = "red";
+            }
+        }
+
+        function buy(price, itemName) {
+            if (qx >= price) {
+                qx -= price;
+                document.getElementById('shop-msg').innerText = "Kupiłeś " + itemName + "!";
+                updateDisplay();
+            } else {
+                alert("Masz za mało QX! Idź do banku wymienić PLN.");
+            }
+        }
+    </script>
+</body>
+</html>
