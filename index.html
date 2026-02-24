@@ -4,96 +4,121 @@
     <meta charset="UTF-8">
     <title>Symulator Portfela QX</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f3; display: flex; flex-direction: column; align-items: center; }
-        nav { background: #333; width: 100%; display: flex; justify-content: center; gap: 20px; padding: 15px 0; }
-        nav button { background: none; border: 1px solid white; color: white; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
-        nav button:hover { background: white; color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; margin: 0; }
         
-        .tab { display: none; background: white; width: 80%; max-width: 500px; padding: 30px; margin-top: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        /* Górny panel z kasą */
+        .top-bar { background: #2d2d2d; width: 100%; text-align: center; padding: 20px 0; border-bottom: 3px solid #00d4ff; position: sticky; top: 0; }
+        .money-box { font-size: 24px; font-weight: bold; color: #00d4ff; }
+        
+        /* Nawigacja */
+        nav { margin: 20px 0; }
+        nav button { background: #444; border: none; color: white; padding: 10px 25px; cursor: pointer; border-radius: 5px; margin: 0 5px; transition: 0.3s; }
+        nav button:hover { background: #00d4ff; color: black; }
+
+        /* Karty sekcji */
+        .tab { display: none; background: #333; width: 90%; max-width: 450px; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
         .active { display: block; }
 
-        .balance-bar { background: #222; color: #00ffcc; padding: 10px 20px; border-radius: 50px; margin: 20px; font-weight: bold; }
-        .item { border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        input { padding: 8px; width: 100px; border-radius: 5px; border: 1px solid #ccc; margin: 10px; }
-        .buy-btn { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        /* Elementy w sklepie i banku */
+        .card { background: #444; margin: 10px 0; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        input { padding: 10px; width: 80%; border-radius: 5px; border: none; margin-bottom: 10px; font-size: 16px; }
+        .btn-action { background: #00d4ff; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-action:disabled { background: #666; cursor: not-allowed; }
+        
+        .status-msg { height: 20px; font-size: 14px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="balance-bar">
-        Portfel: <span id="pln-display">100</span> PLN | <span id="qx-display">0</span> QX
+    <div class="top-bar">
+        <div class="money-box">💰 Mój Portfel: <span id="wallet-qx">0</span> QX</div>
+        <div style="font-size: 14px; color: #aaa;">Skarbiec w banku: <span id="bank-qx">5000</span> QX</div>
     </div>
 
     <nav>
-        <button onclick="showTab('bank')">🏦 Bank (Kantor)</button>
-        <button onclick="showTab('shop')">🛒 Sklep QX</button>
+        <button onclick="showTab('bank')">🏦 BANK (Wypłata)</button>
+        <button onclick="showTab('shop')">🛒 SKLEP QX</button>
     </nav>
 
     <div id="bank" class="tab active">
-        <h2>Bank Centralny QX</h2>
-        <p>Kurs wymiany: <b>1 PLN = 5 QX</b></p>
-        <p>Ile PLN chcesz wymienić?</p>
-        <input type="number" id="exchange-amount" placeholder="Ilość PLN" min="1">
+        <h2>Bankomat QX</h2>
+        <p>Ile QX chcesz wypłacić ze skarbca do portfela?</p>
+        <input type="number" id="withdraw-amount" placeholder="Wpisz kwotę QX..." min="1">
         <br>
-        <button onclick="exchangeMoney()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-            Wymień na QX
-        </button>
-        <p id="bank-msg" style="color: red;"></p>
+        <button class="btn-action" onclick="withdrawMoney()">Wypłać do portfela</button>
+        <div id="bank-msg" class="status-msg"></div>
     </div>
 
     <div id="shop" class="tab">
-        <h2>Sklep z wirtualnymi dobrami</h2>
-        <div class="item">
-            <span>Kawa Late (Fake)</span>
-            <span><b>15 QX</b> <button class="buy-btn" onclick="buy(15, 'Kawę')">Kup</button></span>
+        <h2>Sklep (Płać w QX)</h2>
+        
+        <div class="card">
+            <span>Cyber-Czapka</span>
+            <span><b>100 QX</b> <button class="btn-action" onclick="buy(100, 'Cyber-Czapkę')">Kup</button></span>
         </div>
-        <div class="item">
-            <span>Złoty Miecz (Fake)</span>
-            <span><b>150 QX</b> <button class="buy-btn" onclick="buy(150, 'Miecz')">Kup</button></span>
+
+        <div class="card">
+            <span>Szybki Hoverboard</span>
+            <span><b>1200 QX</b> <button class="btn-action" onclick="buy(1200, 'Hoverboard')">Kup</button></span>
         </div>
-        <div class="item">
-            <span>Nowy Awatar (Fake)</span>
-            <span><b>50 QX</b> <button class="buy-btn" onclick="buy(50, 'Awatara')">Kup</button></span>
+
+        <div class="card">
+            <span>Napój "Turbo-QX"</span>
+            <span><b>25 QX</b> <button class="btn-action" onclick="buy(25, 'Napój')">Kup</button></span>
         </div>
-        <p id="shop-msg" style="color: blue;"></p>
+
+        <div id="shop-msg" class="status-msg" style="color: #00d4ff;"></div>
     </div>
 
     <script>
-        let pln = 100;
-        let qx = 0;
-        const rate = 5; // 1 PLN = 5 QX
+        // Startowe wartości
+        let wallet = 0;
+        let vault = 5000;
 
-        function updateDisplay() {
-            document.getElementById('pln-display').innerText = pln;
-            document.getElementById('qx-display').innerText = qx;
+        function updateUI() {
+            document.getElementById('wallet-qx').innerText = wallet;
+            document.getElementById('bank-qx').innerText = vault;
         }
 
         function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
+            // Czyścimy komunikaty przy zmianie zakładki
+            document.getElementById('bank-msg').innerText = "";
+            document.getElementById('shop-msg').innerText = "";
         }
 
-        function exchangeMoney() {
-            let amount = parseInt(document.getElementById('exchange-amount').value);
-            if (amount > 0 && amount <= pln) {
-                pln -= amount;
-                qx += (amount * rate);
-                document.getElementById('bank-msg').innerText = "Wymiana udana!";
-                document.getElementById('bank-msg').style.color = "green";
-                updateDisplay();
+        function withdrawMoney() {
+            let amount = parseInt(document.getElementById('withdraw-amount').value);
+            let msg = document.getElementById('bank-msg');
+
+            if (isNaN(amount) || amount <= 0) {
+                msg.innerText = "Wpisz poprawną kwotę!";
+                msg.style.color = "orange";
+                return;
+            }
+
+            if (amount <= vault) {
+                vault -= amount;
+                wallet += amount;
+                msg.innerText = "Pomyślnie wypłacono " + amount + " QX!";
+                msg.style.color = "#00ff88";
+                updateUI();
             } else {
-                document.getElementById('bank-msg').innerText = "Nie masz tyle PLN!";
-                document.getElementById('bank-msg').style.color = "red";
+                msg.innerText = "Nie masz tyle w skarbcu!";
+                msg.style.color = "red";
             }
         }
 
-        function buy(price, itemName) {
-            if (qx >= price) {
-                qx -= price;
-                document.getElementById('shop-msg').innerText = "Kupiłeś " + itemName + "!";
-                updateDisplay();
+        function buy(price, name) {
+            let msg = document.getElementById('shop-msg');
+            if (wallet >= price) {
+                wallet -= price;
+                msg.innerText = "Zakupiono: " + name + "!";
+                updateUI();
             } else {
-                alert("Masz za mało QX! Idź do banku wymienić PLN.");
+                msg.innerText = "Masz za mało QX w portfelu!";
+                msg.style.color = "red";
             }
         }
     </script>
